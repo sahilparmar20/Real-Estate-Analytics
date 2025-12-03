@@ -1,0 +1,9 @@
+{
+	"name": "realestatetransform",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "17de54e1-bfc5-4d53-9ae0-df54b15d98c6",
+		"tenantId": "cbd57ebc-a874-4319-a200-a6acb2c415ad"
+	}
+}

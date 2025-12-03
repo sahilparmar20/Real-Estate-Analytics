@@ -1,0 +1,62 @@
+{
+	"name": "dim_agents",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "AgentSK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AgentID",
+				"type": "varchar"
+			},
+			{
+				"name": "AgentName",
+				"type": "varchar"
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			},
+			{
+				"name": "City",
+				"type": "varchar"
+			},
+			{
+				"name": "JoinDate",
+				"type": "date"
+			},
+			{
+				"name": "ExperienceYears",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EffectiveFrom",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "EffectiveTo",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "IsActive",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dwh",
+			"table": "DimAgent"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,103 @@
+{
+	"name": "STG_agents_to_dim_agents",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "stg_agents",
+						"type": "DatasetReference"
+					},
+					"name": "stgagents"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_agents",
+						"type": "DatasetReference"
+					},
+					"name": "dimagents"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dim_agents",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          AgentID as string,",
+				"          AgentName as string,",
+				"          Region as string,",
+				"          City as string,",
+				"          JoinDate as date,",
+				"          ExperienceYears as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 501,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> stgagents",
+				"source(output(",
+				"          AgentSK as integer,",
+				"          AgentID as string,",
+				"          AgentName as string,",
+				"          Region as string,",
+				"          City as string,",
+				"          JoinDate as date,",
+				"          ExperienceYears as integer,",
+				"          EffectiveFrom as timestamp,",
+				"          EffectiveTo as timestamp,",
+				"          IsActive as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 501,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimagents",
+				"stgagents, dimagents lookup(stgagents@AgentID == dimagents@AgentID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 alterRow(insertIf(isNull(stgagents@AgentID)),",
+				"     updateIf(!isNull(dimagents@AgentID)&&(stgagents@AgentName!=dimagents@AgentName||stgagents@Region!=dimagents@Region||stgagents@City!=dimagents@City||stgagents@JoinDate!=dimagents@JoinDate||stgagents@ExperienceYears!=dimagents@ExperienceYears))) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          AgentSK as integer,",
+				"          AgentID as string,",
+				"          AgentName as string,",
+				"          Region as string,",
+				"          City as string,",
+				"          JoinDate as date,",
+				"          ExperienceYears as integer,",
+				"          EffectiveFrom as timestamp,",
+				"          EffectiveTo as timestamp,",
+				"          IsActive as boolean",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['AgentSK'],",
+				"     skipKeyWrites:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
